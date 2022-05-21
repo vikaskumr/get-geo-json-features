@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { lastValueFrom, Observable, firstValueFrom } from 'rxjs';
-import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
+import { lastValueFrom } from 'rxjs';
+import osmtogeojson from 'osmtogeojson';
 
 @Injectable()
 export class OpenStreetApiService {
@@ -27,9 +27,9 @@ export class OpenStreetApiService {
 
       this.logger.log(
         'successfully fetched GeoJSONFeatures from openstreetmap api',
-        data,
       );
-      return data;
+
+      return osmtogeojson(data);
     } catch (error) {
       this.logger.error(
         'failed while fetching GeoJSONFeatures from openstreetmap api',
