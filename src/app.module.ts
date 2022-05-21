@@ -1,14 +1,16 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { OpenStreetModule } from './open-street-api/open-street.module';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { AllExceptionsFilter } from './utils/filters/all-exceptions.filter';
+import { OpenStreetController } from './open-street-api/controller/open-street.controller';
+import { OpenStreetApiService } from './open-street-api/service/open-street-api.service';
+import { HttpModule } from '@nestjs/axios';
+
 @Module({
-  imports: [OpenStreetModule],
-  controllers: [AppController],
+  imports: [HttpModule, OpenStreetModule],
+  controllers: [OpenStreetController],
   providers: [
-    AppService,
+    OpenStreetApiService,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
