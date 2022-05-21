@@ -21,8 +21,8 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 ## Swagger
-Swagger is available on ```route {{API_HOST}}/docs```.
-Postman collection to import is available under ```${{API_HOST}}/docs-json```
+Swagger is available on `route {{API_HOST}}/docs`.
+Postman collection to import is available under `${{API_HOST}}/docs-json`
 
 ## Environment variables
 ```bash
