@@ -5,9 +5,16 @@ import { AllExceptionsFilter } from './utils/filters/all-exceptions.filter';
 import { OpenStreetController } from './open-street-api/controller/open-street.controller';
 import { OpenStreetApiService } from './open-street-api/service/open-street-api.service';
 import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [HttpModule, OpenStreetModule],
+  imports: [
+    HttpModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    OpenStreetModule,
+  ],
   controllers: [OpenStreetController],
   providers: [
     OpenStreetApiService,

@@ -2,11 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import osmtogeojson from 'osmtogeojson';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OpenStreetApiService {
   public logger;
-  constructor(protected readonly httpService: HttpService) {
+  constructor(
+    protected readonly httpService: HttpService,
+    protected readonly configService: ConfigService,
+  ) {
     this.logger = new Logger(OpenStreetApiService.name);
   }
 
@@ -16,7 +20,7 @@ export class OpenStreetApiService {
         'started fetching GeoJSONFeatures from openstreetmap api',
       );
 
-      const url = 'https://www.openstreetmap.org/api/0.6/map';
+      const url = this.configService.get<string>('OPEN_STREET_API_URL');
       const { data } = await lastValueFrom(
         this.httpService.get(url, {
           params: {
