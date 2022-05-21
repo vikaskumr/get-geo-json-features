@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OpenStreetApiService } from '../service/open-street-api.service';
 
-describe('OpenStreetService', () => {
+describe.skip('OpenStreetService', () => {
   let service: OpenStreetApiService;
 
   beforeEach(async () => {

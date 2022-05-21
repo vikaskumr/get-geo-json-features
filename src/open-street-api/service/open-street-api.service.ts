@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import osmtogeojson from 'osmtogeojson';
 import { ConfigService } from '@nestjs/config';
+import { FeatureCollection, GeometryObject } from 'geojson';
 
 @Injectable()
 export class OpenStreetApiService {
@@ -14,13 +15,15 @@ export class OpenStreetApiService {
     this.logger = new Logger(OpenStreetApiService.name);
   }
 
-  public async getGeoJSONFeatures(boundingBox): Promise<any> {
+  public async getGeoJSONFeatures(
+    boundingBox: string,
+  ): Promise<FeatureCollection<GeometryObject>> {
     try {
       this.logger.log(
         'started fetching GeoJSONFeatures from openstreetmap api',
       );
 
-      const url = this.configService.get<string>('OPEN_STREET_API_URL');
+      const url: string = this.configService.get<string>('OPEN_STREET_API_URL');
       const { data } = await lastValueFrom(
         this.httpService.get(url, {
           params: {
