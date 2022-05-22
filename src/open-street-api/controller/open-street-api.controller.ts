@@ -24,6 +24,6 @@ export class OpenStreetController {
   public async getGeoJSONFeatures(
     @Query() { bbox }: GetGeoJSONParamsDto,
   ): Promise<FeatureCollection<GeometryObject>> {
-    return await this.openStreetApiService.getGeoJSONFeatures(bbox);
+    return this.openStreetApiService.getGeoJSONFeatures(bbox);
   }
 }

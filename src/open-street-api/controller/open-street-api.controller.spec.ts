@@ -73,7 +73,6 @@ const geoJSONResponse = {
     },
   ],
 };
-
 describe('OpenStreetController', () => {
   let controller: OpenStreetController;
 
@@ -90,6 +89,10 @@ describe('OpenStreetController', () => {
     }).compile();
 
     controller = module.get<OpenStreetController>(OpenStreetController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
   it('should return expected response', () => {
