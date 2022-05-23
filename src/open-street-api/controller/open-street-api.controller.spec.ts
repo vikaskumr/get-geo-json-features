@@ -1,11 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OpenStreetController } from './open-street-api.controller';
-import fetch from 'node-fetch';
 import { OpenStreetApiService } from '../service/open-street-api.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-const { Response } = jest.requireActual('node-fetch');
-jest.mock('node-fetch');
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+
+const httpService = {
+  get: jest.fn(),
+};
+
+const configService = {
+  get: jest.fn(),
+};
 
 const geoJSONResponse = {
   type: 'FeatureCollection',
@@ -73,10 +80,29 @@ const geoJSONResponse = {
     },
   ],
 };
+
+const errorResponse = {
+  err: {
+    reason:
+      'The latitudes must be between -90 and 90, longitudes between -180 and 180 and the minima must be less than the maxima.',
+    statusCode: 400,
+    code: 'ERR_BAD_REQUEST',
+  },
+  statusCode: 400,
+  timestamp: '2022-05-22T04:09:21.184Z',
+};
 describe('OpenStreetController', () => {
   let controller: OpenStreetController;
+  let openStreetApiService: OpenStreetApiService;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
+    openStreetApiService = new OpenStreetApiService(
+      httpService as unknown as HttpService,
+      configService as unknown as ConfigService,
+    );
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         HttpModule,
@@ -85,7 +111,12 @@ describe('OpenStreetController', () => {
         }),
       ],
       controllers: [OpenStreetController],
-      providers: [OpenStreetApiService],
+      providers: [
+        {
+          provide: OpenStreetApiService,
+          useValue: openStreetApiService,
+        },
+      ],
     }).compile();
 
     controller = module.get<OpenStreetController>(OpenStreetController);
@@ -95,11 +126,23 @@ describe('OpenStreetController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should return expected response', () => {
-    fetch.mockResolvedValue(new Response(JSON.stringify(geoJSONResponse)));
+  it('should return expected response', async () => {
+    openStreetApiService.getGeoJSONFeatures = jest
+      .fn()
+      .mockImplementation(() => geoJSONResponse);
     const bbox = { bbox: '-90,90,90,90' };
-    return controller.getGeoJSONFeatures(bbox).then((data) => {
-      expect(data).toStrictEqual(geoJSONResponse);
-    });
+    expect(await controller.getGeoJSONFeatures(bbox)).toStrictEqual(
+      geoJSONResponse,
+    );
+  });
+
+  it('should return error', async () => {
+    openStreetApiService.getGeoJSONFeatures = jest
+      .fn()
+      .mockImplementation(() => errorResponse);
+    const bbox = { bbox: '-0,90,60,9' };
+    expect(await controller.getGeoJSONFeatures(bbox)).toStrictEqual(
+      errorResponse,
+    );
   });
 });
